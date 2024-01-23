@@ -1,7 +1,8 @@
-import random, time
+import random
+import time
+from collections import Counter
 
 from Card import Card
-from collections import Counter
 
 
 def check_matches(hand) -> []:
@@ -14,10 +15,11 @@ def check_matches(hand) -> []:
 
     return matches
 
+
 def cpu_turn_animation():
     for i in range(4):
-        print("." * i)
-        time.sleep(1)
+        print("." * i)  # This is to simulate CPU thinking, slows the tempo of the game
+        time.sleep(1)  # Sleeping for 4 seconds
 
 
 def removeMatchCards(hand, matches) -> []:
@@ -29,23 +31,24 @@ def removeMatchCards(hand, matches) -> []:
 
 def printHand(player_hand):
     print("Your hand:")
-    for card in player_hand:
+    for card in player_hand:  # Iterate over users hand and print the cards (uses the toString in card)
         print(card)
+
+
 def checkCPUHand(cpu_hand, player_hand, select_card):
     matches_in_hand = [card for card in cpu_hand if card.value == select_card]  # Collect all matching cards
     if matches_in_hand:
         for card in matches_in_hand:  # Transfer all matching cards
             cpu_hand.remove(card)
             player_hand.append(card)
-        return True  # Indicate that cards were found and transferred
-    return False  # Indicate that no matching cards were found
+        return True  # Cards were found and transferred
+    return False  # No matching cards were found
 
 
 def check_game_over(player_hand, cpu_hand, deck) -> bool:
     if len(player_hand) <= 0 and len(cpu_hand) <= 0 and len(deck) <= 0:
         return True
     return False
-
 
 
 if __name__ == "__main__":
@@ -55,7 +58,8 @@ if __name__ == "__main__":
 
     while is_playing:
         # Start Go Fish Application
-        stop_continue = input("Welcome to Go Fish! Type X to exit (any other character to continue): ").strip()  # Request the user's input on quitting
+        stop_continue = input(
+            "Welcome to Go Fish! Type X to exit (any other character to continue): ").strip()  # Request the user's input on quitting
         print()
         if stop_continue.upper() == "X":
             is_playing = False  # Quit the application
@@ -63,7 +67,8 @@ if __name__ == "__main__":
 
             # Start a new game for players
             current_game_inprogress = True
-            deck = [Card(card_value, card_suit) for card_value in range(1, 13) for card_suit in suit] # Creating the Deck of cards
+            deck = [Card(card_value, card_suit) for card_value in range(1, 13) for card_suit in suit]  # Creating the
+            # Deck of cards
             player_hand = []
             cpu_hand = []
             cpumatches = []
@@ -84,67 +89,77 @@ if __name__ == "__main__":
                 # printHand(cpu_hand)
                 # Don't print the CPU's hand in normal gameplay -- Testing
 
-                pos = input(
-                    "It's your turn. What card would you like to ask for? 1 (A), 11(J), 12(Q), 13(K) ")
-
-                if pos.isdigit() and 1 <= int(pos) <= 13:
-                    select_card = int(pos)  # Convert input to integer
-                    if checkCPUHand(cpu_hand, player_hand, select_card):
-                        print("CPU had a match! You got a card.")
+                while True:  # Input validation loop for card selection
+                    pos = input("It's your turn. What card would you like to ask for? 1 (A), 11(J), 12(Q), 13(K) ")
+                    if pos.isdigit() and 1 <= int(pos) <= 13:
+                        select_card = int(pos)  # Convert input to integer
+                        if checkCPUHand(cpu_hand, player_hand, select_card):
+                            print("CPU had a match! You got a card.")
+                        else:
+                            print("Go fish!")
+                            random_card = random.choice(deck)
+                            player_hand.append(random_card)
+                            deck.remove(random_card)
+                        break
                     else:
-                        print("Go fish!")
-                        random_card = random.choice(deck)
-                        player_hand.append(random_card)
-                        deck.remove(random_card)
+                        print("Invalid input. Please enter a number between 1 and 13.")
 
                 printHand(player_hand)
 
-                matches_input = input("Do you have any matches? Type Y for yes and N for no ")
-                if matches_input.upper() == "Y":
-                    matches = check_matches(player_hand)
-                    print(matches)
-                    if matches:
-                        playermatches.append(matches)
-                        print(matches[0][0].value)
-                        player_hand = removeMatchCards(player_hand, matches)
-                        print("You made a match! Well done.")
+                while True:  # Input validation loop for matches
+                    matches_input = input("Do you have any matches? Type Y for yes and N for no ")
+                    if matches_input.upper() == "Y":  # Player believes they have match
+                        matches = check_matches(player_hand)  # Checking for matches in player_hand
+                        if matches:  # Matches were found
+                            playermatches.append(matches)  # Adding matches to player matches
+                            player_hand = removeMatchCards(player_hand, matches)   # Removing matched cards from player hand
+                            print("You made a match! Well done.")
+                            break # Break Validation
+                        else:
+                            print("Quit lying, you ain't got no matches!")
+                            break # Break Validation
+                    if matches_input.upper() == "N":  # User doesn't have matches aren't called liars
+                        break  # Break Validation
                     else:
-                        print("Quit lying, you ain't got no matches!")
+                        print("Invalid input. Please enter Y for yes or N for no.")
 
-                cpu_turn_animation()
+                cpu_turn_animation()  # Simulate CPU thinking
 
-                random_card = random.choice(cpu_hand)
+                random_card = random.choice(cpu_hand)  # Selecting a card to ask for from hand
                 select_card = int(random_card.value)  # Convert input to integer
 
                 print("CPU has asked if you have any " + str(select_card) + "'s?")
-                if checkCPUHand(player_hand, cpu_hand, select_card):
+                if checkCPUHand(player_hand, cpu_hand,
+                                select_card):  # Checking CPU Hand versus Player hand for the card CPU selects
                     print("You had a match! CPU got a card.")
                 else:
                     print("CPU went fishing!")
-                    random_card = random.choice(deck)
-                    cpu_hand.append(random_card)
-                    deck.remove(random_card)
+                    random_card = random.choice(deck)  # Get random card from deck
+                    cpu_hand.append(random_card)  # Add random card to cpu_hand
+                    deck.remove(random_card)  # Removing card from deck
 
                 matches = check_matches(cpu_hand)
                 if matches:
-                    cpumatches.append(matches)
-                    cpu_hand = removeMatchCards(cpu_hand, matches)
+                    cpumatches.append(matches)  # Adding matches to the cpus matches list
+                    cpu_hand = removeMatchCards(cpu_hand, matches)  # Removed matched cards from players hand
                     print("CPU had a match!")
 
-                print("\nCPU's turn finished.\n")
+                print()
+                print("CPU's turn finished.")
 
-                if check_game_over(player_hand, cpu_hand, deck):
+                if check_game_over(player_hand, cpu_hand,
+                                   deck):  # Checks if the deck, cpu_hand and player_hand are empty (end of game)
                     print("Game is over, both of you and the CPU are out of cards and the deck is empty.")
                     print()
-                    if len(cpumatches) > len(playermatches):
+                    if len(cpumatches) > len(playermatches):  # Player has less matches than the CPU (CPU wins)
                         print("You lost!")
                         current_game_inprogress = False
-                    elif len(playermatches) > len(cpumatches):
+
+                    elif len(playermatches) > len(cpumatches):  # Player has more matches than the CPU (player wins)
                         print("You win!")
-                    elif len(playermatches) == len(cpumatches):
+                        current_game_inprogress = False
+
+                    elif len(playermatches) == len(cpumatches):  # Player and CPU have tied (no one wins)
                         print("The game ended in a tie!")
-
-
-
-
+                        current_game_inprogress = False
 
