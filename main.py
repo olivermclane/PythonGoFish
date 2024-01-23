@@ -1,12 +1,12 @@
-import random
-import time
-from collections import Counter
+import random  # Used for random picking
+import time  # For sleeping program while user plays
+from collections import Counter  # Helps with find matches
 
 from Card import Card
 
 
 def check_matches(hand) -> []:
-    card_counts = Counter(card.value for card in hand)  # Count card values efficiently
+    card_counts = Counter(card.value for card in hand)
     matches = []
     for value, count in card_counts.items():
         if count >= 4:
@@ -17,7 +17,7 @@ def check_matches(hand) -> []:
 
 
 def cpu_turn_animation():
-    for i in range(4):
+    for i in range(random.randint(1, 7)):
         print("." * i)  # This is to simulate CPU thinking, slows the tempo of the game
         time.sleep(1)  # Sleeping for 4 seconds
 
