@@ -73,8 +73,7 @@ if __name__ == "__main__":
 
             # Start a new game for players
             current_game_inprogress = True
-            deck = [Card(card_value, card_suit) for card_value in range(1, 13) for card_suit in suit]  # Creating the
-            # Deck of cards
+            deck = [Card(card_value, card_suit) for card_value in range(1, 13) for card_suit in suit]  # Creating the Deck of cards
             player_hand = []
             cpu_hand = []
             cpumatches = []
